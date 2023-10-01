@@ -102,7 +102,3 @@ async def check_user(user_id):
         return name
     else:
         return None
-    #for row in rows:
-    #    if user_id in row:
-    #        return
-

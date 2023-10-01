@@ -1,12 +1,15 @@
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters.state import StatesGroup, State
+#from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.dispatcher.filters import Text
 from db import db_start, create_profile, edit_profile,read_db, update_profile,delete_profile,check_record, check_user
 from keyboard import inline_kb, rkm, key_force,key_happy,key_calm,key_sadness,key_fury,key_fear,keyboard
 from datetime import datetime
+
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+
+from states import ProfileStates
 
 storage = MemoryStorage() #створюємо екземпляр нашого сховища, де будуть зберігатись дані нашого стану (дані зв'язані з цими станами)
 bot = Bot(token='6632849538:AAFOSXP-UBCmgdDu8d-8XmLvfZ41JSjewDY')
@@ -14,31 +17,17 @@ dp = Dispatcher(bot, storage=storage)
 
 
 async def on_startup(_):
+    print('Bot working')
     await db_start()
-
-
-class ProfileStates(StatesGroup): #клас що буде зберігати всі необхідні стани нашого бота
-    id_update = State()
-    id_delete = State()
-    user_name = State()
-    emoji = State()
-    emoji1 = State()
-    value = State()
-    what_heppend = State()
-    editing = State()
-
 
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
     id = message.from_user.id
-    print(id)
     user_name = await check_user(id)
-    print(user_name)
     if user_name:
-        await message.answer('Menu',
-                             reply_markup=rkm)
+        await message.answer('Menu',reply_markup=rkm)
     else:
-        await message.answer('Введіть прізвище та ініціали')
+        await message.answer('register')
 
 
 @dp.message_handler(Text(equals="Переглянути записи 👀"))
@@ -99,7 +88,7 @@ async def start(message: types.Message):
 
 @dp.callback_query_handler(state=ProfileStates.emoji)
 async def callback_emoji(callback: types.CallbackQuery, state:FSMContext):
-    async with state.proxy() as data: #відкриваємо локальний менеджер збереження даних де будемо тимчасово зберігати дані
+    async with state.proxy() as data:
         data['emoji'] = callback.data
     if data['emoji'] == "Радість":
         await callback.message.reply(text='зробіть вибір', reply_markup=keyboard(key_happy))
