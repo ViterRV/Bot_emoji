@@ -5,6 +5,9 @@ from states.states import ProfileStates
 from keyboards.emoji_menu import *
 from datetime import datetime
 
+from utils.db_api.db_emoji import edit_profile, update_profile
+
+
 @dp.message_handler(text="Додати запис ✍️")
 async def start(message: types.Message):
     await message.answer("Привіт! Як справи? Обери свій стан!",
@@ -66,5 +69,14 @@ async def value_emoji(message: types.Message, state:FSMContext):
 async def what_heppend(message: types.Message, state:FSMContext):
     async with state.proxy() as data:
         data['what_heppend'] = message.text
+
+    if 'id_update' in data:  # Перевірка наявності ключа 'id' в словнику data
+        await update_profile(state, id=data['id_update'], user_id=message.from_user.id, user_name=message.from_user.full_name,
+                             time=datetime.now())
+        await message.answer('Запис відредаговано')
+        await state.finish()
+    else:
+        await edit_profile(state, user_id=message.from_user.id, user_name=message.from_user.full_name,
+                           time=datetime.now())
         await message.answer('Запис додано')
         await state.finish()
