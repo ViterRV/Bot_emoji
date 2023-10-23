@@ -12,6 +12,6 @@ class ProfileStates(StatesGroup):
     editing = State()
 
 class Register(StatesGroup):
-    name = State()
-    clas = State()
+    first_name = State()
+    last_name = State()
 

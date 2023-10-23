@@ -7,13 +7,13 @@ async def db_start():
 
     cur.execute('''CREATE TABLE if not EXISTS emoji(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER,
     user_name text,
     time int,
     emoji text,
     emoji1 text,
     value text,
-    what_heppend text)
+    what_heppend text,
+    user_id INTEGER)
     ''')
     db.commit()
 
